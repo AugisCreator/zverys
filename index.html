@@ -413,11 +413,22 @@ tr.addEventListener("touchend", function(e) {
 function deleteRow(data, laikas, zveris, trEl) {
   var div = document.createElement("div");
   div.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:white;padding:24px;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.3);z-index:9999;text-align:center;";
-  div.innerHTML =
+    div.innerHTML =
     '<p style="font-size:18px;font-weight:bold;margin:0 0 16px 0;">Trinti ' + zveris + '?<br><span style="font-size:15px;font-weight:normal;">' + data + ' ' + laikas + '</span></p>' +
-    '<button onclick="confirmDelete(\'' + data + '\',\'' + laikas + '\',\'' + zveris + '\');this.parentNode.remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#e53935;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Trinti</button>' +
-    '<button onclick="this.parentNode.remove();cancelDelete();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atšaukti</button>';
+    '<button id="btn-trinti" style="width:100%;padding:16px;margin-bottom:10px;background:#e53935;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Trinti</button>' +
+    '<button id="btn-atsaukti" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atšaukti</button>';
   document.body.appendChild(div);
+  document.getElementById("btn-trinti").addEventListener("touchend", function(e) {
+    e.preventDefault();
+    confirmDelete(data, laikas, zveris);
+    div.remove();
+  });
+  document.getElementById("btn-atsaukti").addEventListener("touchend", function(e) {
+    e.preventDefault();
+    div.remove();
+    cancelDelete();
+  });
+
 
   window._deletingRow = trEl;
 }
