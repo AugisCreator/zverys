@@ -434,7 +434,7 @@ function confirmDelete(data, laikas, zveris) {
   fetch(API + "?action=delete&data=" + encodeURIComponent(data) + "&laikas=" + encodeURIComponent(laikas) + "&zveris=" + encodeURIComponent(zveris))
     .then(function(r) { return r.json(); })
     .then(function() {
-      document.getElementById("status").innerHTML = "Ištrintas: " + zveris;
+      document.getElementById("status").innerHTML = "Ištrinta: " + zveris;
       loadTable();
     })
     .catch(function(e) {
