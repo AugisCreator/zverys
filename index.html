@@ -238,7 +238,7 @@ function openMap(googleUrl) {
     '<p style="font-size:18px;font-weight:bold;margin:0 0 16px 0;">Atidaryti su:</p>' +
     '<button onclick="window.location.href=\'https://maps.google.com/?q=' + lat + ',' + lng + '\';document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#4285F4;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Google Maps</button>' +
     '<button onclick="window.location.href=\'https://waze.com/ul?ll=' + lat + ',' + lng + '&navigate=yes\';document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#33CCFF;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Waze</button>' +
-    '<button onclick="document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atsaukti</button>';
+    '<button onclick="document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atšaukti</button>';
   document.body.appendChild(div);
 }
 
@@ -416,7 +416,7 @@ function deleteRow(data, laikas, zveris, trEl) {
   div.innerHTML =
     '<p style="font-size:18px;font-weight:bold;margin:0 0 16px 0;">Trinti ' + zveris + '?<br><span style="font-size:15px;font-weight:normal;">' + data + ' ' + laikas + '</span></p>' +
     '<button onclick="confirmDelete(\'' + data + '\',\'' + laikas + '\',\'' + zveris + '\');this.parentNode.remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#e53935;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Trinti</button>' +
-    '<button onclick="this.parentNode.remove();cancelDelete();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atsaukti</button>';
+    '<button onclick="this.parentNode.remove();cancelDelete();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atšaukti</button>';
   document.body.appendChild(div);
 
   window._deletingRow = trEl;
@@ -430,7 +430,7 @@ function cancelDelete() {
 }
 
 function confirmDelete(data, laikas, zveris) {
-  document.getElementById("status").innerHTML = "Trinamas...";
+  document.getElementById("status").innerHTML = "Trinama...";
   fetch(API + "?action=delete&data=" + encodeURIComponent(data) + "&laikas=" + encodeURIComponent(laikas) + "&zveris=" + encodeURIComponent(zveris))
     .then(function(r) { return r.json(); })
     .then(function() {
