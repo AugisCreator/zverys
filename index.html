@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>žvėrys</title>
+
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  max-width: 100%;
+  margin: 0;
+  padding: 12px;
+  background: #ffffff;
+  min-height: 100vh;
+  color: black;
+}
+h1 { text-align: center; font-size: 28px; margin: 0 0 12px 0; color: #2196F3; letter-spacing: 2px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.animal-btn {
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: none;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: transform 0.1s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+.animal-btn:active { transform: scale(0.96); }
+.stirna { background: linear-gradient(#4CAF50, #45a049); }
+.lape   { background: linear-gradient(#FF9800, #F57C00); }
+.zuikis { background: linear-gradient(#9C27B0, #7B1FA2); }
+.kita   { background: linear-gradient(#607D8B, #455A64); }
+#status {
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  min-height: 40px;
+}
+.kita-section {
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+.kita-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  -webkit-appearance: none;
+}
+.kita-btns { display: flex; gap: 8px; justify-content: center; width: 100%; }
+.kita-btns button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+.btn-siusti { background: #4CAF50; color: white; }
+.table-section { background: #f0f0f0; padding: 12px; border-radius: 14px; }
+.table-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.table-header h2 { margin: 0; font-size: 18px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  border: 2px solid #2196F3;
+  background: #ffffff;
+  color: #2196F3;
+  font-weight: bold;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%232196F3' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; color: black; font-size: 18px; }
+th { background: #2196F3; color: white; padding: 12px 10px; text-align: left; font-weight: bold; font-size: 16px; }
+td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 16px; }
+tr:last-child td { border-bottom: none; }
+.vieta-link { color: #2196F3; text-decoration: none; font-weight: bold; }
+</style>
+
+</head>
+<body>
+
+<h1>Matyti žvėrys</h1>
+
+<div class="grid">
+  <button class="animal-btn stirna" onclick="addZveris('Stirna')">🦌 STIRNA</button>
+  <button class="animal-btn lape"   onclick="addZveris('Lapė')">🦊 LAPĖ</button>
+  <button class="animal-btn zuikis" onclick="addZveris('Zuikis')">🐰 ZUIKIS</button>
+  <button class="animal-btn kita"   onclick="toggleKita()">📝 KITA</button>
+</div>
+
+<div id="kita-section" class="kita-section">
+  <input type="text" id="kita-input" class="kita-input" placeholder="Ivesti matyta zveri...">
+  <div class="kita-btns">
+    <button class="btn-siusti" onclick="sendKita()">SIŪSTI</button>
+  </div>
+</div>
+
+<div id="status">Sistema paruosta!</div>
+
+<div class="table-section">
+  <div class="table-header">
+    <h2>Stebejimai:</h2>
+    <div class="filters">
+      <select id="filter-metai" onchange="updateMenesiaiFilter(); filterTable();">
+        <option value="">Visi metai</option>
+      </select>
+      <select id="filter-menuo" onchange="filterTable()">
+        <option value="">Visi men</option>
+      </select>
+      <select id="filter-zveris" onchange="filterTable()">
+        <option value="">Visi</option>
+        <option value="Stirna">Stirna</option>
+        <option value="Lape">Lape</option>
+        <option value="Zuikis">Zuikis</option>
+        <option value="KITI">Kiti</option>
+      </select>
+    </div>
+    <span id="viso-count" style="font-weight:bold;font-size:20px;color:#000000;">Viso: 0</span>
+  </div>
+  <table id="data-table">
+    <thead>
+      <tr><th>Data</th><th>Laikas</th><th>Žvėris</th><th>Vieta</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+var API = "https://script.google.com/macros/s/AKfycbxkWZNWtWVr1xImsV4EgrBzj-8F1YeejgNZxs2bziVEKHt04kzdWvl6wzhA1JCzpe03/exec";
+var visiDuomenys = [];
+
+function getCurrentTime() {
+  var now = new Date();
+  var d = now.getFullYear() + "." + ("0"+(now.getMonth()+1)).slice(-2) + "." + ("0"+now.getDate()).slice(-2);
+  var t = ("0"+now.getHours()).slice(-2) + ":" + ("0"+now.getMinutes()).slice(-2);
+  return {dataStr: d, laikas: t};
+}
+
+// Safari GPS fix: watchPosition su timeout fallback
+function getGps(callback) {
+  if (!navigator.geolocation) {
+    document.getElementById("status").innerHTML = "GPS nepalaikomas šioje naršyklėje";
+    callback(null);
+    return;
+  }
+
+  document.getElementById("status").innerHTML = "Laukiama GPS...";
+
+  var called = false;
+  var watchId = null;
+
+  // Safari reikalauja watchPosition arba greito getCurrentPosition su mazesniu timeout
+  // Naudojam getCurrentPosition su dviem bandymais
+  function tryGetPosition(highAccuracy, attempt) {
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        if (called) return;
+        called = true;
+        callback({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      function(err) {
+        if (called) return;
+        if (attempt === 1 && highAccuracy) {
+          // Antras bandymas - zemas tikslumas (greiciau veikia Safari)
+          document.getElementById("status").innerHTML = "GPS lėtas, bandoma iš naujo...";
+          tryGetPosition(false, 2);
+        } else {
+          called = true;
+          var msg = "GPS klaida";
+          if (err.code === 1) msg = "GPS uždrausta. Eik į Nustatymai → Safari → Vieta → Leisti";
+          else if (err.code === 2) msg = "GPS nepasiekiamas. Patikrink ar įjungtas";
+          else if (err.code === 3) msg = "GPS užtruko per ilgai. Bandyk dar kartą";
+          document.getElementById("status").innerHTML = msg;
+          callback(null);
+        }
+      },
+      {
+        enableHighAccuracy: highAccuracy,
+        timeout: highAccuracy ? 10000 : 5000,
+        maximumAge: 0  // Safari: BŪTINAI 0, kad negrąžintų senos vietos
+      }
+    );
+  }
+
+  tryGetPosition(true, 1);
+}
+
+function getVieta(lat, lng, callback) {
+  fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&accept-language=lt")
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var v = d.address.village || d.address.town || d.address.city || d.address.municipality || d.address.county || "Nezinoma";
+      callback(v);
+    })
+    .catch(function() { callback("Nezinoma"); });
+}
+
+function addZveris(zveris) {
+  document.getElementById("status").innerHTML = "Nustatoma vieta...";
+  getGps(function(gps) {
+    if (!gps) return; // statusas jau nustatytas getGps viduje
+    getVieta(gps.lat, gps.lng, function(vieta) {
+      var t = getCurrentTime();
+      var mapsUrl = "https://maps.google.com/?q=" + gps.lat + "," + gps.lng;
+      var data = [t.dataStr, t.laikas, zveris, vieta, gps.lng, gps.lat, mapsUrl];
+      document.getElementById("status").innerHTML = "Issaugoma...";
+      fetch(API, {
+        method: "POST",
+        body: JSON.stringify({data: data})
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        document.getElementById("status").innerHTML = "Prideta: " + res.zveris + " (" + vieta + ")";
+        loadTable();
+      })
+      .catch(function(e) {
+        document.getElementById("status").innerHTML = "Klaida issaugant: " + e.message;
+      });
+    });
+  });
+}
+
+function openMap(googleUrl) {
+  var coords = googleUrl.split("?q=")[1];
+  var lat = coords.split(",")[0];
+  var lng = coords.split(",")[1];
+
+  var existing = document.getElementById("map-dialog");
+  if (existing) { existing.remove(); return; }
+
+  var div = document.createElement("div");
+  div.id = "map-dialog";
+  div.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:white;padding:24px;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.3);z-index:9999;text-align:center;";
+  div.innerHTML =
+    '<p style="font-size:18px;font-weight:bold;margin:0 0 16px 0;">Atidaryti su:</p>' +
+    '<button onclick="window.location.href=\'https://maps.google.com/?q=' + lat + ',' + lng + '\';document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#4285F4;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Google Maps</button>' +
+    '<button onclick="window.location.href=\'https://waze.com/ul?ll=' + lat + ',' + lng + '&navigate=yes\';document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#33CCFF;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Waze</button>' +
+    '<button onclick="document.getElementById(\'map-dialog\').remove();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atsaukti</button>';
+  document.body.appendChild(div);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("kita-input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") { sendKita(); }
+  });
+});
+
+function toggleKita() {
+  var s = document.getElementById("kita-section");
+  s.style.display = s.style.display === "flex" ? "none" : "flex";
+  document.getElementById("kita-input").value = "";
+}
+
+function hideKita() {
+  document.getElementById("kita-section").style.display = "none";
+  document.getElementById("kita-input").value = "";
+}
+
+function sendKita() {
+  var z = document.getElementById("kita-input").value.trim();
+  if (!z) { alert("Ivesk zveri!"); return; }
+  hideKita();
+  addZveris(z);
+}
+
+function loadTable() {
+  fetch(API + "?action=get")
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      visiDuomenys = rows || [];
+      populateMetaiFilter();
+      var now = new Date();
+      var siosMet = now.getFullYear().toString();
+      var siosMen = ("0" + (now.getMonth() + 1)).slice(-2);
+      var selMetai = document.getElementById("filter-metai");
+      var selMenuo = document.getElementById("filter-menuo");
+      if (!selMetai.value) selMetai.value = siosMet;
+      updateMenesiaiFilter();
+      if (!selMenuo.value) selMenuo.value = siosMen;
+      filterTable();
+    })
+    .catch(function(e) {
+      document.getElementById("status").innerHTML = "Klaida kraunant: " + e.message;
+    });
+}
+
+function populateMetaiFilter() {
+  var sel = document.getElementById("filter-metai");
+  var buves = sel.value;
+  var metai = [];
+  visiDuomenys.forEach(function(row) {
+    var m = row[0] ? row[0].toString().substring(0, 4) : "";
+    if (m.length === 4 && metai.indexOf(m) === -1) metai.push(m);
+  });
+  metai.sort().reverse();
+  sel.innerHTML = '<option value="">Visi metai</option>';
+  metai.forEach(function(m) {
+    sel.innerHTML += '<option value="' + m + '">' + m + '</option>';
+  });
+  if (buves) {
+    sel.value = buves;
+  } else {
+    var siosMet = new Date().getFullYear().toString();
+    if (metai.indexOf(siosMet) !== -1) sel.value = siosMet;
+  }
+  updateMenesiaiFilter();
+}
+
+function updateMenesiaiFilter() {
+  var filtMetai = document.getElementById("filter-metai").value;
+  var sel = document.getElementById("filter-menuo");
+  var buves = sel.value;
+  var menesiai = [];
+  var pavadinimai = ["","Sausis","Vasaris","Kovas","Balandis","Geguze","Birzelis","Liepa","Rugpjutis","Rugsejis","Spalis","Lapkritis","Gruodis"];
+  visiDuomenys.forEach(function(row) {
+    var data = row[0] ? row[0].toString() : "";
+    var metai = data.substring(0, 4);
+    var menuo = data.substring(5, 7);
+    if ((!filtMetai || metai === filtMetai) && menuo && menesiai.indexOf(menuo) === -1) {
+      menesiai.push(menuo);
+    }
+  });
+  menesiai.sort();
+  sel.innerHTML = '<option value="">Visi men</option>';
+  menesiai.forEach(function(m) {
+    var nr = parseInt(m);
+    sel.innerHTML += '<option value="' + m + '">' + pavadinimai[nr] + '</option>';
+  });
+  if (buves) {
+    sel.value = buves;
+  } else {
+    var siosMen = ("0" + (new Date().getMonth() + 1)).slice(-2);
+    if (menesiai.indexOf(siosMen) !== -1) sel.value = siosMen;
+  }
+}
+
+function filterTable() {
+  var filtMetai = document.getElementById("filter-metai").value;
+  var filtMenuo = document.getElementById("filter-menuo").value;
+  var filtZveris = document.getElementById("filter-zveris").value;
+  var pagrindiniai = ["Stirna", "Lape", "Lapė", "Zuikis"];
+
+  var filtered = visiDuomenys.filter(function(row) {
+    var data = row[0] ? row[0].toString() : "";
+    var metaiOk = !filtMetai || data.substring(0, 4) === filtMetai;
+    var menuoOk = !filtMenuo || data.substring(5, 7) === filtMenuo;
+    var zveris = row[2] ? row[2].toString().trim() : "";
+    var zverisOk = true;
+    if (filtZveris === "KITI") {
+      zverisOk = pagrindiniai.indexOf(zveris) === -1;
+    } else if (filtZveris !== "") {
+      zverisOk = zveris === filtZveris || (zveris === "Lapė" && filtZveris === "Lape");
+    }
+    return metaiOk && menuoOk && zverisOk;
+  });
+
+  var tbody = document.querySelector("#data-table tbody");
+  tbody.innerHTML = "";
+  document.getElementById("viso-count").innerHTML = "Viso: " + filtered.length;
+  if (filtered.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='4'>Nera duomenu</td></tr>";
+    return;
+  }
+  filtered.sort(function(a, b) {
+    var dtA = a[0].toString() + " " + a[1].toString();
+    var dtB = b[0].toString() + " " + b[1].toString();
+    return dtB.localeCompare(dtA);
+  });
+  filtered.forEach(function(row) {
+    var tr = tbody.insertRow();
+    tr.insertCell(0).textContent = row[0] || "";
+    tr.insertCell(1).textContent = row[1] || "";
+    tr.insertCell(2).textContent = row[2] || "";
+    var c = tr.insertCell(3);
+    var link = row[6] || "";
+    c.innerHTML = link
+      ? '<a class="vieta-link" href="#" onclick="openMap(\'' + link + '\'); return false;">' + (row[3] || "Vieta") + '</a>'
+      : (row[3] || "");
+
+    var touchStartX = 0;
+    tr.addEventListener("touchstart", function(e) {
+      touchStartX = e.touches[0].clientX;
+    }, {passive: true});
+
+    tr.addEventListener("touchend", function(e) {
+      var diff = touchStartX - e.changedTouches[0].clientX;
+      if (diff > 80) {
+        tr.style.background = "#ffebee";
+        deleteRow(row[0], row[1], row[2], tr);
+      }
+    }, {passive: true});
+  });
+}
+
+function deleteRow(data, laikas, zveris, trEl) {
+  var div = document.createElement("div");
+  div.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:white;padding:24px;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.3);z-index:9999;text-align:center;";
+  div.innerHTML =
+    '<p style="font-size:18px;font-weight:bold;margin:0 0 16px 0;">Trinti ' + zveris + '?<br><span style="font-size:15px;font-weight:normal;">' + data + ' ' + laikas + '</span></p>' +
+    '<button onclick="confirmDelete(\'' + data + '\',\'' + laikas + '\',\'' + zveris + '\');this.parentNode.remove();" style="width:100%;padding:16px;margin-bottom:10px;background:#e53935;color:white;border:none;border-radius:12px;font-size:18px;font-weight:bold;">Trinti</button>' +
+    '<button onclick="this.parentNode.remove();cancelDelete();" style="width:100%;padding:14px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:16px;">Atsaukti</button>';
+  document.body.appendChild(div);
+  window._deletingRow = trEl;
+}
+
+function cancelDelete() {
+  if (window._deletingRow) {
+    window._deletingRow.style.background = "";
+    window._deletingRow = null;
+  }
+}
+
+function confirmDelete(data, laikas, zveris) {
+  document.getElementById("status").innerHTML = "Trinamas...";
+  fetch(API + "?action=delete&data=" + encodeURIComponent(data) + "&laikas=" + encodeURIComponent(laikas) + "&zveris=" + encodeURIComponent(zveris))
+    .then(function(r) { return r.json(); })
+    .then(function() {
+      document.getElementById("status").innerHTML = "Istrintas: " + zveris;
+      loadTable();
+    })
+    .catch(function(e) {
+      document.getElementById("status").innerHTML = "Klaida: " + e.message;
+    });
+}
+
+window.onload = function() { loadTable(); };
+</script>
+
+</body>
+</html>
