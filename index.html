@@ -340,7 +340,7 @@ function updateMenesiaiFilter() {
     }
   });
   menesiai.sort();
-  sel.innerHTML = '<option value="">Visi men</option>';
+  sel.innerHTML = '<option value="">Visi mėn</option>';
   menesiai.forEach(function(m) {
     var nr = parseInt(m);
     sel.innerHTML += '<option value="' + m + '">' + pavadinimai[nr] + '</option>';
