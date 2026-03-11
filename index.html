@@ -118,7 +118,7 @@ tr:last-child td { border-bottom: none; }
 </div>
 
 <div id="kita-section" class="kita-section">
-  <input type="text" id="kita-input" class="kita-input" placeholder="Ivesti matytą žvėrį...">
+  <input type="text" id="kita-input" class="kita-input" placeholder="Įvesti matytą žvėrį...">
   <div class="kita-btns">
     <button class="btn-siusti" onclick="sendKita()">SIŪSTI</button>
   </div>
@@ -128,7 +128,7 @@ tr:last-child td { border-bottom: none; }
 
 <div class="table-section">
   <div class="table-header">
-    <h2>Stebejimai:</h2>
+    <h2>Stebėjimai:</h2>
     <div class="filters">
       <select id="filter-metai" onchange="updateMenesiaiFilter(); filterTable();">
         <option value="">Visi metai</option>
@@ -376,7 +376,7 @@ function filterTable() {
   tbody.innerHTML = "";
   document.getElementById("viso-count").innerHTML = "Viso: " + filtered.length;
   if (filtered.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='5'>Nera duomenu</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='5'>Nėra duomenų</td></tr>";
     return;
   }
   filtered.sort(function(a, b) {
